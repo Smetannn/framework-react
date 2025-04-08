@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import Menu from './components/Menu/Menu';
+import Esse from './components/Esse/Esse';
+import Calc from './components/Calc/Calc';
+import RPG from './components/RPG/RPG';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+class App extends Component {
+
+  state = {
+    activeComponent: null
+  };
+
+  
+  showComponent = (componentName) => {
+    this.setState({ activeComponent: componentName });
+
+  }
+
+  render() {
+    return (
+      <div className="app-container">
+  
+      <div className="menu-container">
+        <Menu onSelect={this.showComponent} />
+      </div>
+
+      
+
+      <div className="main-content">
+        
+        {this.state.activeComponent === 'esse' && <Esse />}
+        {this.state.activeComponent === 'calc' && <Calc />}   
+        {this.state.activeComponent === 'rpg' && <RPG />}   
+        {!this.state.activeComponent} 
+      </div>
     </div>
-  );
+    );
+  }
 }
 
 export default App;
