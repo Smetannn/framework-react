@@ -6,7 +6,6 @@ class UI2D extends React.Component {
         super(options);
         this.num = 0;
         this.callbacks = options.callbacks || {};
-        this.addEventListeners();
     }
 
     addEventListeners() {

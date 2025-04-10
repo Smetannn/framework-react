@@ -35,7 +35,7 @@ class Graph2D extends React.Component {
             }
         });
 
-        new UI2D({
+        this.ui=new UI2D({
             id: 'ui',
             parent: this.id,
             callbacks: {
@@ -158,13 +158,13 @@ class Graph2D extends React.Component {
             }
         }
     }
-getS
     render() {
         return (
             <div className="graph2d-container">
                 <canvas id="canvas2D"></canvas>
                 <div class="ui2D">
-                <button className="glow-on-hover" type="button" id="addFunction">Добавить функцию</button>
+                <button id = "addFunction" 
+                onClick={() => this.ui.addFunction()}>Добавить функцию</button>
                 <div id="funcsInputs"></div>
             </div>
             </div>
