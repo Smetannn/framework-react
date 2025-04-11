@@ -27,6 +27,11 @@ class Menu extends React.Component {
                 >Graph2D
                 </button>
 
+                <button className='graph3d-button'
+                    onClick={() => this.props.onSelect('graph3d')}
+                >Graph3D
+                </button>
+
                 
 
             </div>

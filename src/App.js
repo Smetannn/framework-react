@@ -4,6 +4,8 @@ import Esse from './components/Esse/Esse';
 import Calc from './components/Calc/Calc';
 import RPG from './components/RPG/RPG';
 import Graph2D from './components/Graph2D/Graph2D';
+import Graph3D from './components/Graph3D/Graph3D';
+
 
 
 class App extends Component {
@@ -34,6 +36,7 @@ class App extends Component {
         {this.state.activeComponent === 'calc' && <Calc />}   
         {this.state.activeComponent === 'rpg' && <RPG />}   
         {this.state.activeComponent === 'graph2d' && <Graph2D />}   
+        {this.state.activeComponent === 'graph3d' && <Graph3D />}   
         {!this.state.activeComponent} 
       </div>
     </div>
