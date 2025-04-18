@@ -14,6 +14,7 @@ class App extends Component {
     activeComponent: null
   };
 
+
   
   showComponent = (componentName) => {
     this.setState({ activeComponent: componentName });
@@ -27,9 +28,7 @@ class App extends Component {
       <div className="menu-container">
         <Menu onSelect={this.showComponent} />
       </div>
-
       
-
       <div className="main-content">
         
         {this.state.activeComponent === 'esse' && <Esse />}

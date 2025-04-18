@@ -1,6 +1,7 @@
 import React from "react";
 import Point from "../../modules/math3D/entities/Point";
 import Light from "../../modules/math3D/entities/Light";
+import { hexToRgb } from "../../modules/math3D/entities/Polygon";
 import Cube from "../../modules/math3D/figures/Cube";
 import Sphere from "../../modules/math3D/figures/Sphere";
 import Pyramid from "../../modules/math3D/figures/Pyramid";
@@ -46,35 +47,14 @@ class Graph3D extends React.Component {
             'EllipticalParaboloid': EllipticalParaboloid,
             'HyperbolicParaboloid': HyperbolicParaboloid,
         }
-
         this.scene = new Cube();
         this.math3D = new Math3D({ WIN: this.WIN });
-        
-        
-
         this.canRotate = false;
+        this.pointShow = true;
+        this.edgeShow = true;
+        this.polygonShow = true;
         this.dx = 0;
         this.dy = 0;
-
-        this.renderFrame();
-    }
-    componentDidMount() {
-        this.canvas = new Canvas({
-            id: 'canvas3D',
-            width: 500,
-            height: 500,
-            WIN: this.WIN,
-            callbacks: {
-                wheel: (event) => this.wheel(event),
-                mousemove: (event) => this.mousemove(event),
-                mouseup: () => this.mouseup(),
-                mousedown: (event) => this.mousedown(event),
-                mouseleave: () => this.mouseleave(),
-            },
-        });
-
-        this.addEventListeners();
-        this.renderFrame();
     }
 
     componentDidMount() {
@@ -91,10 +71,8 @@ class Graph3D extends React.Component {
                 mouseleave: () => this.mouseleave(),
             },
         });
-        this.addEventListeners();
         this.renderFrame();
     }
-    
 
     wheel(event) {
         const delta = (event.wheelDelta > 0) ? 1.1 : 0.9;
@@ -132,40 +110,22 @@ class Graph3D extends React.Component {
         }
     }
 
-
-    addEventListeners() {
-        document.getElementById('selectFigure').addEventListener('change', (event) => {
-            const selectedFigure = event.target.value;
-
-            if (selectedFigure && this.figures[selectedFigure]) {
-                this.scene = new this.figures[selectedFigure]();
-                this.renderFrame();
-            }
-        });
-
-        document.getElementById('pointsCheckbox').addEventListener('change', () => {
+    selectFigureHandler(event) {
+        const selectedFigure = event.target.value;
+        if (selectedFigure && this.figures[selectedFigure]) {
+            this.scene = new this.figures[selectedFigure]();
             this.renderFrame();
-        });
-
-        document.getElementById('edgesCheckbox').addEventListener('change', () => {
-            this.renderFrame();
-        });
-
-        document.getElementById('polygonsCheckbox').addEventListener('change', () => {
-            this.renderFrame();
-        });
-
-        document.getElementById('lightPower').addEventListener('input', (event) => {
-            const powerValue = parseInt(event.target.value);
-            this.LIGHT.lumen = powerValue;
-            document.getElementById('lightPowerValue').textContent = powerValue;
-            this.renderFrame();
-        });
+        }
     }
 
+    colorFigureHandler(event) {
+        const color = event.target.value;
+        this.scene.polygons.forEach(polygon => polygon.setColor(color));
+        this.renderFrame();
+    }
 
     renderFrame() {
-        if (!this.canvas) return; 
+        if (!this.canvas) return;
 
         this.canvas.clear();
         this.math3D.calcDistance(this.scene, this.WIN.CAMERA, 'distance');
@@ -181,12 +141,14 @@ class Graph3D extends React.Component {
                         y: this.math3D.ys(this.scene.points[index]),
                     })
                 );
+
                 const lumen = this.math3D.calcIllumination(polygon.lumen, this.LIGHT.lumen);
                 let { r, g, b } = polygon.color;
                 r = Math.round(r * lumen);
                 g = Math.round(g * lumen);
                 b = Math.round(b * lumen);
-                this.canvas.polygon(array, `${polygon.rgbToHex(r, g, b)}`);
+
+                this.canvas.polygon(array, polygon.rgbToHex(r, g, b));
             });
         }
 
@@ -212,37 +174,44 @@ class Graph3D extends React.Component {
             });
         }
     }
+
     render() {
         return (
-            <div className="graph3d-container">
-                <div className="graph3D">
-                    <select id='selectFigure'>
-                        <option value="Cube">Куб</option>
-                        <option value="Sphere">Сфера</option>
-                        <option value="Pyramid">Пирамида</option>
-                        <option value="Cylinder">Цилиндр</option>
-                        <option value="Thor">Тор</option>
-                        <option value="Conus">Конус</option>
-                        <option value="EllipticalCylinder">Эллиптический цилиндр</option>
-                        <option value="ParabolicCylinder">Параболический цилиндр</option>
-                        <option value="HyperbolicCylinder">Гиперболический цилиндр</option>
-                        <option value="OneSheetedHyperboloid">Однополостный гиперболоид</option>
-                        <option value="TwoSheetedHyperboloid">Двухполостный гиперболоид</option>
-                        <option value="EllipticalParaboloid">Эллиптический параболоид</option>
-                        <option value="HyperbolicParaboloid">Гиперболический параболоид</option>
-                    </select>
-                    <div className="checkboxes">
-                        <label><input type="checkbox" id="pointsCheckbox"  /> Точки</label>
-                        <label><input type="checkbox" id="edgesCheckbox"  /> Ребра</label>
-                        <label><input type="checkbox" id="polygonsCheckbox"  /> Полигоны</label>
-                    </div>
-                    <div className="light-control">
-                        <label for="lightPower">Мощность света: <span id="lightPowerValue">50</span></label><br />
-                        <input type="range" id="lightPower" min="0" max="100000" value="0" className="slider" />
-                    </div>
-                    <canvas className="canvas" id="canvas3D"></canvas>
+            <div className="graph3D">
+                <select onChange={(event) => this.selectFigureHandler(event)}>
+                    <option value="Cube">Куб</option>
+                    <option value="Sphere">Сфера</option>
+                    <option value="Pyramid">Пирамида</option>
+                    <option value="Cylinder">Цилиндр</option>
+                    <option value="Thor">Тор</option>
+                    <option value="Conus">Конус</option>
+                    <option value="EllipticalCylinder">Эллиптический цилиндр</option>
+                    <option value="ParabolicCylinder">Параболический цилиндр</option>
+                    <option value="HyperbolicCylinder">Гиперболический цилиндр</option>
+                    <option value="OneSheetedHyperboloid">Однополостный гиперболоид</option>
+                    <option value="TwoSheetedHyperboloid">Двухполостный гиперболоид</option>
+                    <option value="EllipticalParaboloid">Эллиптический параболоид</option>
+                    <option value="HyperbolicParaboloid">Гиперболический параболоид</option>
+                </select>
+                <div className="checkboxes">
+                    <label><input type="checkbox" id="pointsCheckbox" defaultChecked onChange={() => this.renderFrame()} /> Точки</label>
+                    <label><input type="checkbox" id="edgesCheckbox" defaultChecked onChange={() => this.renderFrame()} /> Ребра</label>
+                    <label><input type="checkbox" id="polygonsCheckbox" defaultChecked onChange={() => this.renderFrame()} /> Полигоны</label>
                 </div>
-                <canvas id="canvas3D"></canvas>
+                <div className='col'>
+                    <input type="color" onChange={(event) => this.colorFigureHandler(event)} />
+                </div>
+                <div className="light-control">
+                    <label for="lightPower">Мощность света: <span id="lightPowerValue">50</span></label><br />
+                    <input type="range" id="lightPower" min="0" max="100000" className="slider"
+                        onChange={(event) => {
+                            const powerValue = parseInt(event.target.value);
+                            this.LIGHT.lumen = powerValue;
+                            document.getElementById('lightPowerValue').textContent = powerValue;
+                            this.renderFrame();
+                        }} />
+                </div>
+                <canvas className="canvas" id="canvas3D"></canvas>
             </div>
         );
     }

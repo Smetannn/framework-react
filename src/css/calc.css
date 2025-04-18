@@ -1,0 +1,58 @@
+
+.container {
+    background-color: white; /* Цвет фона калькулятора */
+    border-radius: 10px; /* Закругленные углы */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Тень для эффекта глубины */
+    padding: 20px;
+    width: 400px; /* Ширина калькулятора */
+}
+
+textarea {
+    width: 95%;
+    height: 80px; /* Высота текстовых областей */
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Внутренняя тень для текстовых областей */
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Расстояние между кнопками */
+}
+
+button {
+    flex: 1; /* Кнопки будут занимать равное пространство */
+    padding: 15px;
+    font-size: 18px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s; /* Плавный переход цвета и эффекта нажатия */
+}
+
+button:hover {
+    background-color: #0056b3; /* Цвет кнопки при наведении */
+}
+
+button:active {
+    background-color: #004085; /* Цвет кнопки при нажатии */
+    transform: scale(0.95); /* Эффект уменьшения при нажатии */
+}
+
+button.operand {
+    background-color: #28a745; /* Цвет для кнопок операций */
+}
+
+button.operand:hover {
+    background-color: #218838; /* Цвет для кнопок операций при наведении */
+}
+
+button.operand:active {
+    background-color: #1e7e34; /* Цвет для кнопок операций при нажатии */
+}

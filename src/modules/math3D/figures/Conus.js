@@ -2,6 +2,8 @@ import Figure from "../entities/Figure";
 import Point from "../entities/Point";
 import Edge from "../entities/Edge";
 import Polygon from "../entities/Polygon";
+
+
 class Conus extends Figure {
     constructor(count = 5, a = 1, b = 1, c = 1) {
         super();

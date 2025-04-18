@@ -4,7 +4,7 @@ import Bunny from '../../img/Bunny.jpg';
 import Shp from '../../img/Shp.jpg';
 import Fireman from '../../img/Fireman.jpg';
 import Cat from '../../gif/cat.gif';
-import '../../css/esse.css';
+import './esse.css';
 
 
 class Esse extends React.Component {
