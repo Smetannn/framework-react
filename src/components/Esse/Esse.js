@@ -7,15 +7,14 @@ import Cat from '../../gif/cat.gif';
 import './esse.css';
 
 
-class Esse extends React.Component {
-    render() {
+const Esse=()=> {
         return (
             <div className="esse-container">
                 <h1 className="heading1">Егор Сметанин</h1>
                 <img src={Cat} alt="Cat" align="right" />
                 <h2 className="heading2">@smetaneg</h2>
                 <p>
-                    <img src={FirstPhoto} alt="First Photo" height="320" width="250px" align="left" vspace="10" hspace="10" />
+                    <img src={FirstPhoto} alt="Egor Smetanin" height="320" width="250px" align="left" vspace="10" hspace="10" />
                 </p>
                 <p className="info-about-me">
                     Здравствуйте! Меня зовут Сметанин Егор. Я родился и вырос в Ижевске
@@ -44,13 +43,13 @@ class Esse extends React.Component {
                     Теперь я, Егор Сметанин - студент 1 курса Прикладной информатики УдГУ, а также организатор детских праздников
                 </h2>
                 <p style={{ textAlign: 'center' }}>
-                    <img src={Shp} alt="First Photo" width="20%" />
-                    <img src={Fireman} alt="First Photo" hspace="10" width="45%" />
-                    <img src={Bunny} alt="First Photo" width="20%" />
+                    <img src={Shp} alt="Shp" width="20%" />
+                    <img src={Fireman} alt="Fireman" hspace="10" width="45%" />
+                    <img src={Bunny} alt="Bunny" width="20%" />
                 </p>
             </div>
         );
     }
-}
+
 
 export default Esse;
