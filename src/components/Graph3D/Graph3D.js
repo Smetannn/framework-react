@@ -1,7 +1,6 @@
 import React from "react";
 import Point from "../../modules/math3D/entities/Point";
 import Light from "../../modules/math3D/entities/Light";
-import { hexToRgb } from "../../modules/math3D/entities/Polygon";
 import Cube from "../../modules/math3D/figures/Cube";
 import Sphere from "../../modules/math3D/figures/Sphere";
 import Pyramid from "../../modules/math3D/figures/Pyramid";
@@ -18,9 +17,23 @@ import HyperbolicParaboloid from "../../modules/math3D/figures/HyperbolicParabol
 import Math3D from "../../modules/math3D/Math3D";
 import Canvas from "../../modules/Canvas/Canvas";
 
+window.requestAnimFrame = (function () {
+    return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function (callback) {
+            window.setTimeout(callback, 1000 / 60);
+        }
+})();
+
+
 class Graph3D extends React.Component {
     constructor(options) {
         super(options);
+
+        this.pendingRender = false;
 
         this.WIN = {
             LEFT: -5,
@@ -71,7 +84,36 @@ class Graph3D extends React.Component {
                 mouseleave: () => this.mouseleave(),
             },
         });
-        this.renderFrame();
+        let countFPS = 0;
+        let FPS = 0;
+        let lastTimeStamp = Date.now();
+        const loop = () => {
+            countFPS++;
+            const timeStamp = Date.now();
+            if (timeStamp - lastTimeStamp >= 1000) {
+                FPS = countFPS;
+                countFPS = 0;
+                lastTimeStamp = timeStamp;
+            }
+            if (!this.pendingRender) {
+                this.pendingRender = true;
+                window.requestAnimationFrame(() => {
+                    this.renderFrame(FPS);
+                    this.pendingRender = false;
+                });
+            }
+
+            window.requestAnimationFrame(loop);
+        };
+
+        window.requestAnimationFrame(loop);
+
+
+        loop();
+    }
+
+    componentWillUnmount() {
+        window.cancelAnimationFrame(this.reqId);
     }
 
     wheel(event) {
@@ -107,6 +149,14 @@ class Graph3D extends React.Component {
             this.dx = event.offsetX;
             this.dy = event.offsetY;
             this.renderFrame();
+            if (!this.pendingRender) {
+                this.pendingRender = true;
+
+                window.requestAnimationFrame(() => {
+                    this.renderFrame();
+                    this.pendingRender = false;
+                });
+            }
         }
     }
 
@@ -114,25 +164,52 @@ class Graph3D extends React.Component {
         const selectedFigure = event.target.value;
         if (selectedFigure && this.figures[selectedFigure]) {
             this.scene = new this.figures[selectedFigure]();
+            this.math3D.scene = this.scene;
             this.renderFrame();
+        }
+        if (!this.pendingRender) {
+            this.pendingRender = true;
+            window.requestAnimationFrame(() => {
+                this.renderFrame();
+                this.pendingRender = false;
+            });
         }
     }
 
     colorFigureHandler(event) {
         const color = event.target.value;
         this.scene.polygons.forEach(polygon => polygon.setColor(color));
-        this.renderFrame();
+        if (!this.pendingRender) {
+            this.pendingRender = true;
+            window.requestAnimationFrame(() => {
+                this.renderFrame();
+                this.pendingRender = false;
+            });
+        }
     }
 
-    renderFrame() {
+    renderFrame(FPS = 0) {
+
         if (!this.canvas) return;
 
+        this.scene.points.forEach(point => {
+            point.xs_cached = null;
+            point.ys_cached = null;
+        });
+    
         this.canvas.clear();
+
         this.math3D.calcDistance(this.scene, this.WIN.CAMERA, 'distance');
         this.math3D.calcDistance(this.scene, this.LIGHT, 'lumen');
         this.math3D.sortByArtistAlgorithm(this.scene.polygons);
 
-        if (document.getElementById("polygonsCheckbox").checked) {
+        this.canvas.text(`FPS:${FPS}`, -4.5, 4.5, '#000000');
+
+        const polygonsCheckbox = document.getElementById("polygonsCheckbox");
+        const edgesCheckbox = document.getElementById("edgesCheckbox");
+        const pointsCheckbox = document.getElementById("pointsCheckbox");
+
+        if (polygonsCheckbox && polygonsCheckbox.checked) {
             this.scene.polygons.forEach(polygon => {
                 const array = [];
                 polygon.points.forEach(index =>
@@ -152,7 +229,7 @@ class Graph3D extends React.Component {
             });
         }
 
-        if (document.getElementById("edgesCheckbox").checked) {
+        if (edgesCheckbox && edgesCheckbox.checked) {
             this.scene.edges.forEach(edge => {
                 const point1 = this.scene.points[edge.p1];
                 const point2 = this.scene.points[edge.p2];
@@ -165,7 +242,7 @@ class Graph3D extends React.Component {
             });
         }
 
-        if (document.getElementById("pointsCheckbox").checked) {
+        if (pointsCheckbox && pointsCheckbox.checked) {
             this.scene.points.forEach(point => {
                 this.canvas.point(
                     this.math3D.xs(point),

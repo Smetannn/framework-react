@@ -1,8 +1,27 @@
+import Matrix4x4 from "./Matrix4x4";
+
 class Math3D {
     constructor({ WIN }) {
         this.WIN = WIN;
+        this.transformMatrix = new Matrix4x4();
+    }
+    applyTransformations() {
+        const rotationX = Matrix4x4.rotationX(this.rotationXAngle);
+        const rotationY = Matrix4x4.rotationY(this.rotationYAngle);
+        const scale = Matrix4x4.scale(this.scaleFactor, this.scaleFactor, this.scaleFactor);
+        const translation = Matrix4x4.translation(this.translateX, this.translateY, this.translateZ);
+
+        this.transformMatrix = rotationX.multiplyMatrix(rotationY)
+                                        .multiplyMatrix(scale)
+                                        .multiplyMatrix(translation);
     }
 
+    applyTransform(point) {
+        const transformed = this.transformMatrix.multiplyVector(point);
+        point.x = transformed.x;
+        point.y = transformed.y;
+        point.z = transformed.z;
+    }
     xs(point) {
         const zs = this.WIN.CENTER.z;
         const z0 = this.WIN.CAMERA.z;
